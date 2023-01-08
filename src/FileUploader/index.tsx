@@ -14,9 +14,9 @@ export function FileUploader({uploadUrl}: FileUploaderProps) {
      * hidden coupling and undeclared dependencies. However, in this localized context - every context value
      * has to do with upload and are bound in the DOM by where this component `FileUploader` is mounted thus it is an
      * acceptable use of Context
-     * 
+     *
      * Moreover, when using React Context pattern, business logic, interaction logic should be centralized in the provider, and it's
-     * associated hooks. This component follows that best practice by putting all the interaction logic in `FileUploaderProvider` 
+     * associated hooks. This component follows that best practice by putting all the interaction logic in `FileUploaderProvider`
      */
     return (
         <FileUploaderProvider uploadUrl={uploadUrl}>

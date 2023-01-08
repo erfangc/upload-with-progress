@@ -5,6 +5,7 @@ type FileUploaderContextType = {
     progress: number;
     handleSubmit: () => Promise<void>;
     uploadingFile?: File,
+    busy: boolean,
     stagedFiles: File[],
     completedFiles: File[],
     dropzoneState: DropzoneState;

@@ -3,9 +3,11 @@ import {FileUploader} from "./FileUploader";
 
 function App() {
     return (
-        <main className="w-full h-screen flex flex-col items-center justify-center">
+        <main className="min-w-full min-h-screen flex flex-col items-center justify-center bg-gray-200">
             {/* Server implementation: https://github.com/erfangc/upload-with-progress-server */}
-            <FileUploader uploadUrl='http://localhost:8080/upload'/>
+            <div className="shadow-md p-12 bg-white rounded">
+                <FileUploader uploadUrl='http://localhost:8080/upload'/>
+            </div>
         </main>
     );
 }

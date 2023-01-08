@@ -22,9 +22,10 @@ export function FileUploaderProvider({children, uploadUrl}: FileUploaderProvider
     const [completedFiles, setCompletedFiles] = useState<File[]>([]);
     const [progress, setProgress] = useState<number>(0);
     const [uploadingFile, setUploadingFile] = useState<File>();
+    const [busy, setBusy] = useState(false);
 
     /**
-     * useDropzone returns props that `Dropzone.tsx` uses to bootstrap its HTML elements to detect drag and drop events and capture 
+     * useDropzone returns props that `Dropzone.tsx` uses to bootstrap its HTML elements to detect drag and drop events and capture
      * dropped files
      *
      * The react-dropzone library invokes the `onDropAccepted` callback when it detects the user adding new files - either through drag & drop or
@@ -64,26 +65,30 @@ export function FileUploaderProvider({children, uploadUrl}: FileUploaderProvider
      * Essentially invokes uploadFile multiple times once per each staged file
      */
     const handleSubmit = useCallback(async () => {
-        for (let i = 0; i < stagedFiles.length; i++) {
-            let currFile = stagedFiles[i];
-            if (!completedFiles.includes(currFile)) {
-                await uploadFile(currFile);
+        setBusy(true);
+        try {
+            for (let i = 0; i < stagedFiles.length; i++) {
+                let currFile = stagedFiles[i];
+                if (!completedFiles.includes(currFile)) {
+                    await uploadFile(currFile);
+                }
             }
+        } finally {
+            setBusy(false);
         }
     }, [completedFiles, uploadFile, stagedFiles]);
 
     const value = {
         progress,
+        busy,
         uploadingFile,
-        stagedFiles, 
+        stagedFiles,
         completedFiles,
         dropzoneState,
         handleSubmit,
     };
     return (
-        <FileUploaderContext.Provider
-            value={value}
-        >
+        <FileUploaderContext.Provider value={value}>
             {children}
         </FileUploaderContext.Provider>
     );

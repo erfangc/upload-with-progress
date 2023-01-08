@@ -15,7 +15,7 @@ interface FileIconProps {
     file: File;
 }
 
-const size = 24;
+const size = 32;
 const style = {height: size, width: size};
 
 export function FileIcon({file}: FileIconProps) {
