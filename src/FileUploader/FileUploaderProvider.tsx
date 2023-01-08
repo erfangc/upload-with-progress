@@ -27,7 +27,7 @@ export function FileUploaderProvider({children, url}: FileUploaderProviderProps)
             url,
             formData,
             {
-                onUploadProgress: progressEvent => setProgress(progressEvent.loaded / progressEvent.total!!),
+                onUploadProgress: progressEvent => progressEvent.total && setProgress(progressEvent.loaded / progressEvent.total),
             }
         );
         setUploadingFile(undefined);
