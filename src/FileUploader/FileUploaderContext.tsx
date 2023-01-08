@@ -1,4 +1,5 @@
 import * as React from "react";
+import {DropzoneState} from "react-dropzone";
 
 type FileUploaderContextType = {
     progress: number;
@@ -6,7 +7,7 @@ type FileUploaderContextType = {
     uploadingFile?: File,
     stagedFiles: File[],
     completedFiles: File[],
-    handleDropAccepted: (files: File[]) => void,
+    dropzoneState: DropzoneState;
 };
 // @ts-ignore
 export const FileUploaderContext = React.createContext<FileUploaderContextType>({});
