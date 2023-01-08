@@ -1,8 +1,7 @@
 # File Upload with Progress
 
 ## End Result
-
-
+![demo.gif](demo.gif)
 
 ## How to Use?
 
