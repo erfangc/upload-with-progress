@@ -66,9 +66,11 @@ export function FileUploaderProvider({children, uploadUrl}: FileUploaderProvider
     const handleSubmit = useCallback(async () => {
         for (let i = 0; i < stagedFiles.length; i++) {
             let currFile = stagedFiles[i];
-            await uploadFile(currFile);
+            if (!completedFiles.includes(currFile)) {
+                await uploadFile(currFile);
+            }
         }
-    }, [uploadFile, stagedFiles]);
+    }, [completedFiles, uploadFile, stagedFiles]);
 
     const value = {
         progress,
