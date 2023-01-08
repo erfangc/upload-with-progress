@@ -5,6 +5,26 @@
 
 ## How to Use?
 
+Clone the server
+
+```shell
+git clone https://github.com/erfangc/upload-with-progress-server.git
+cd upload-with-progress-server
+```
+
+Then run the server (assuming Java 17+ has been installed on the computer)
+
+```shell
+./mvnw spring-boot:run
+```
+
+Then change to this project and run:
+
+```shell
+npm start
+```
+
+This is the code to mount the `<FileUploader />`:
 ```js
 function App() {
     return (
