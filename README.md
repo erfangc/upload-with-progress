@@ -8,7 +8,7 @@
 ```js
 function App() {
     return (
-        <FileUploader url='http://localhost:8080/upload'/>
+        <FileUploader uploadUrl='http://localhost:8080/upload'/>
     );
 }
 ```

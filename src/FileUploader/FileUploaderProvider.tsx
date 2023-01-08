@@ -5,14 +5,14 @@ import {FileUploaderContext} from "./FileUploaderContext";
 import {useDropzone} from "react-dropzone";
 
 interface FileUploaderProviderProps {
-    url: string;
+    uploadUrl: string;
     children: ReactNode;
 }
 
-export function FileUploaderProvider({children, url}: FileUploaderProviderProps) {
+export function FileUploaderProvider({children, uploadUrl}: FileUploaderProviderProps) {
 
     /**
-     * We declare states to track of:
+     * We declare states to track:
      * - Which files must we upload (i.e. staged for upload)
      * - Which ones have completed upload (after the user presses submit, and we loop through each staged file)
      * - Which file is currently uploading
@@ -24,10 +24,11 @@ export function FileUploaderProvider({children, url}: FileUploaderProviderProps)
     const [uploadingFile, setUploadingFile] = useState<File>();
 
     /**
-     * useDropzone also returns props that Dropzone.tsx uses to bootstrap its HTML elements to detect drag and drop
+     * useDropzone returns props that `Dropzone.tsx` uses to bootstrap its HTML elements to detect drag and drop events and capture 
+     * dropped files
      *
      * The react-dropzone library invokes the `onDropAccepted` callback when it detects the user adding new files - either through drag & drop or
-     * by explicitly clicking on the dropzone and selecting a file. Regardless, we append the file that react-dropzone just
+     * by explicitly clicking on the dropzone and selecting files. Regardless, we append the file that react-dropzone just
      * captured to our list of staged files for upload
      */
     const dropzoneState = useDropzone({
@@ -47,7 +48,7 @@ export function FileUploaderProvider({children, url}: FileUploaderProviderProps)
         formData.append('file', file);
         setUploadingFile(file);
         await axios.post(
-            url,
+            uploadUrl,
             formData,
             {
                 onUploadProgress: ({loaded, total}) =>
@@ -57,7 +58,7 @@ export function FileUploaderProvider({children, url}: FileUploaderProviderProps)
         setUploadingFile(undefined);
         setProgress(0);
         setCompletedFiles(prevState => [...prevState, file]);
-    }, [url]);
+    }, [uploadUrl]);
 
     /**
      * Essentially invokes uploadFile multiple times once per each staged file
@@ -69,9 +70,17 @@ export function FileUploaderProvider({children, url}: FileUploaderProviderProps)
         }
     }, [uploadFile, stagedFiles]);
 
+    const value = {
+        progress,
+        uploadingFile,
+        stagedFiles, 
+        completedFiles,
+        dropzoneState,
+        handleSubmit,
+    };
     return (
         <FileUploaderContext.Provider
-            value={{progress, uploadingFile, stagedFiles, completedFiles, dropzoneState, handleSubmit}}
+            value={value}
         >
             {children}
         </FileUploaderContext.Provider>
