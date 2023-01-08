@@ -1,8 +1,10 @@
 import {bytesToSize} from "./bytesToSize";
 import * as React from "react";
 import {useFileUploaderContext} from "./hooks/useFileUploaderContext";
-
-export function StagedFileForUpload({file}) {
+interface StagedFileForUploadProps {
+    file: File
+}
+export function StagedFileForUpload({file}: StagedFileForUploadProps) {
     const {uploadingFile, completedFiles, progress} = useFileUploaderContext();
     const uploadCompleted = completedFiles.includes(file);
     return (

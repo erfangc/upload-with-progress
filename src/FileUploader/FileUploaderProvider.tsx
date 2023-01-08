@@ -1,9 +1,13 @@
 import * as React from "react";
-import {useCallback, useState} from "react";
+import {ReactNode, useCallback, useState} from "react";
 import axios from "axios";
 import {FileUploaderContext} from "./FileUploaderContext";
 
-export function FileUploaderProvider({children, url}) {
+interface FileUploaderProviderProps {
+    url: string;
+    children: ReactNode;
+}
+export function FileUploaderProvider({children, url}: FileUploaderProviderProps) {
 
     const [stagedFiles, setStagedFiles] = useState([]);
     const [completedFiles, setCompletedFiles] = useState([]);
