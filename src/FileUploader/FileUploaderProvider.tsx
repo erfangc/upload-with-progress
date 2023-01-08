@@ -9,16 +9,16 @@ interface FileUploaderProviderProps {
 }
 export function FileUploaderProvider({children, url}: FileUploaderProviderProps) {
 
-    const [stagedFiles, setStagedFiles] = useState([]);
-    const [completedFiles, setCompletedFiles] = useState([]);
-    const [progress, setProgress] = useState(0);
-    const [uploadingFile, setUploadingFile] = useState(undefined);
+    const [stagedFiles, setStagedFiles] = useState<File[]>([]);
+    const [completedFiles, setCompletedFiles] = useState<File[]>([]);
+    const [progress, setProgress] = useState<number>(0);
+    const [uploadingFile, setUploadingFile] = useState<File>();
 
     const handleDropAccepted = useCallback(
-        acceptedFiles => setStagedFiles(prevState => [...prevState, ...acceptedFiles]), []
+        (acceptedFiles: File[]) => setStagedFiles(prevState => [...prevState, ...acceptedFiles]), []
     );
 
-    const upload = useCallback(async (file) => {
+    const upload = useCallback(async (file: File) => {
         setProgress(0);
         const formData = new FormData();
         formData.append('file', file);
@@ -27,11 +27,11 @@ export function FileUploaderProvider({children, url}: FileUploaderProviderProps)
             url,
             formData,
             {
-                onUploadProgress: progressEvent => setProgress(progressEvent.loaded / progressEvent.total),
+                onUploadProgress: progressEvent => setProgress(progressEvent.loaded / progressEvent.total!!),
             }
         );
         setUploadingFile(undefined);
-        setProgress(undefined);
+        setProgress(0);
         setCompletedFiles(prevState => [...prevState, file]);
     }, [url]);
 

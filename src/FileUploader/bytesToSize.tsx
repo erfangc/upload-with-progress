@@ -3,7 +3,7 @@
  * @param {number} bytes
  * @returns {string}
  */
-export function bytesToSize(bytes) {
+export function bytesToSize(bytes: number) {
     const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
     if (bytes === 0) return 'n/a';
     // @ts-ignore
