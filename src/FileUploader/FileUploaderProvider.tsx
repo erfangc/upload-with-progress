@@ -92,7 +92,7 @@ export function FileUploaderProvider({children, uploadUrl}: FileUploaderProvider
             i++;
         }
 
-        const max = 3;
+        const max = Math.min(3, stagedFiles.length);
         for (let x = 1; x <= max; x++) {
             next();
         }
