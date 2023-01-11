@@ -1,6 +1,4 @@
-import {useFileUploaderContext} from "./hooks/useFileUploaderContext";
 import * as React from "react";
-import {useMemo} from "react";
 import {
     AiFillCheckCircle,
     AiFillFile,
@@ -10,21 +8,20 @@ import {
     AiFillFileText
 } from "react-icons/ai";
 import {MdMovie} from "react-icons/md";
+import {StagedFile} from "./FileUploaderContext";
 
 interface FileIconProps {
-    file: File;
+    stagedFile: StagedFile;
 }
 
 const size = 32;
 const style = {height: size, width: size};
 
-export function FileIcon({file}: FileIconProps) {
+export function FileIcon({stagedFile: {file, completed}}: FileIconProps) {
 
-    const {completedFiles} = useFileUploaderContext();
-    const isComplete = useMemo(() => completedFiles.includes(file), [completedFiles, file]);
     const type = file.type;
 
-    if (isComplete) {
+    if (completed) {
         return <AiFillCheckCircle className="text-emerald-500" style={style}/>;
     } else {
         switch (type) {

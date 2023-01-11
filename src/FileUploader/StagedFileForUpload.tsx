@@ -1,19 +1,17 @@
 import {bytesToSize} from "./bytesToSize";
 import * as React from "react";
-import {useFileUploaderContext} from "./hooks/useFileUploaderContext";
 import {FileIcon} from "./FileIcon";
+import {StagedFile} from "./FileUploaderContext";
 
 interface StagedFileForUploadProps {
-    file: File
+    stagedFile: StagedFile
 }
 
-export function StagedFileForUpload({file}: StagedFileForUploadProps) {
-
-    const {uploadingFile, progress} = useFileUploaderContext();
-
+export function StagedFileForUpload({stagedFile}: StagedFileForUploadProps) {
+    const {file, progress, completed} = stagedFile;
     return (
         <li className="w-full shadow pt-4 pb-2 px-3 rounded-md transition-shadow hover:shadow-lg cursor-pointer duration-300 flex flex-row">
-            <FileIcon file={file}/>
+            <FileIcon stagedFile={stagedFile}/>
             <div className="w-full ml-2">
                 <div className="flex flex-row items-center justify-between">
                     <span className={`text-sm transition-all duration-300 text-gray-800`}>
@@ -28,7 +26,7 @@ export function StagedFileForUpload({file}: StagedFileForUploadProps) {
                         and an inner div whose width is determined by 'progress'
                         */
                     }
-                    {uploadingFile === file && progress
+                    {progress && !completed
                         ?
                         <div
                             style={{width: `${progress * 100}%`}}

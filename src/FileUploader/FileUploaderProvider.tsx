@@ -1,7 +1,7 @@
 import * as React from "react";
 import {ReactNode, useCallback, useState} from "react";
 import axios from "axios";
-import {FileUploaderContext} from "./FileUploaderContext";
+import {FileUploaderContext, StagedFile} from "./FileUploaderContext";
 import {useDropzone} from "react-dropzone";
 
 interface FileUploaderProviderProps {
@@ -18,10 +18,7 @@ export function FileUploaderProvider({children, uploadUrl}: FileUploaderProvider
      * - Which file is currently uploading
      * - What is the progress from [0..1] of the current uploading file
      */
-    const [stagedFiles, setStagedFiles] = useState<File[]>([]);
-    const [completedFiles, setCompletedFiles] = useState<File[]>([]);
-    const [progress, setProgress] = useState<number>(0);
-    const [uploadingFile, setUploadingFile] = useState<File>();
+    const [stagedFiles, setStagedFiles] = useState<StagedFile[]>([]);
     const [busy, setBusy] = useState(false);
 
     /**
@@ -34,7 +31,11 @@ export function FileUploaderProvider({children, uploadUrl}: FileUploaderProvider
      */
     const dropzoneState = useDropzone({
         onDropAccepted: (acceptedFiles: File[]) =>
-            setStagedFiles(prevState => [...prevState, ...acceptedFiles]),
+            setStagedFiles(prevState => [
+                    ...prevState,
+                    ...acceptedFiles.map(file => ({file, progress: 0, completed: false}))
+                ]
+            ),
     });
 
     /**
@@ -44,21 +45,36 @@ export function FileUploaderProvider({children, uploadUrl}: FileUploaderProvider
      * - Handles the actual communication with server
      */
     const uploadFile = useCallback(async (file: File) => {
-        setProgress(0);
         const formData = new FormData();
         formData.append('file', file);
-        setUploadingFile(file);
         await axios.post(
             uploadUrl,
             formData,
             {
-                onUploadProgress: ({loaded, total}) =>
-                    total && setProgress(loaded / total),
+                onUploadProgress: ({loaded, total}) => {
+                    if (total) {
+                        setStagedFiles(prevState =>
+                            prevState.map(stagedFile => {
+                                if (stagedFile.file === file) {
+                                    return {...stagedFile, progress: loaded / total};
+                                } else {
+                                    return stagedFile;
+                                }
+                            })
+                        );
+                    }
+                },
             }
         );
-        setUploadingFile(undefined);
-        setProgress(0);
-        setCompletedFiles(prevState => [...prevState, file]);
+        setStagedFiles(prevState =>
+            prevState.map(stagedFile => {
+                if (stagedFile.file === file) {
+                    return {...stagedFile, completed: true};
+                } else {
+                    return stagedFile;
+                }
+            })
+        );
     }, [uploadUrl]);
 
     /**
@@ -66,24 +82,23 @@ export function FileUploaderProvider({children, uploadUrl}: FileUploaderProvider
      */
     const handleSubmit = useCallback(async () => {
         setBusy(true);
+        const promises = [];
         try {
             for (let i = 0; i < stagedFiles.length; i++) {
                 let currFile = stagedFiles[i];
-                if (!completedFiles.includes(currFile)) {
-                    await uploadFile(currFile);
+                if (!currFile.completed) {
+                    promises.push(uploadFile(currFile.file));
                 }
             }
+            await Promise.all(promises);
         } finally {
             setBusy(false);
         }
-    }, [completedFiles, uploadFile, stagedFiles]);
+    }, [stagedFiles, uploadFile]);
 
     const value = {
-        progress,
         busy,
-        uploadingFile,
         stagedFiles,
-        completedFiles,
         dropzoneState,
         handleSubmit,
     };
