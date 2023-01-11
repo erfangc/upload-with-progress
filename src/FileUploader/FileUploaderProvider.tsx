@@ -82,17 +82,19 @@ export function FileUploaderProvider({children, uploadUrl}: FileUploaderProvider
      */
     const handleSubmit = useCallback(async () => {
         setBusy(true);
-        const promises = [];
-        try {
-            for (let i = 0; i < stagedFiles.length; i++) {
-                let currFile = stagedFiles[i];
-                if (!currFile.completed) {
-                    promises.push(uploadFile(currFile.file));
-                }
+        let i = 0;
+        const next = () => {
+            if (i < stagedFiles.length - 1) {
+                uploadFile(stagedFiles[i].file).then(() => next());
+            } else {
+                uploadFile(stagedFiles[i].file).then(() => setBusy(false));
             }
-            await Promise.all(promises);
-        } finally {
-            setBusy(false);
+            i++;
+        }
+
+        const max = 3;
+        for (let x = 1; x <= max; x++) {
+            next();
         }
     }, [stagedFiles, uploadFile]);
 
